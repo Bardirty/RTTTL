@@ -1,0 +1,12 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00035H 00036H PROGR              
+ 00040H 00057H 00018H PROGR              
+ 00060H 000B3H 00054H DANE               
+ 000C0H 002BFH 00200H STOSIK             
+ 002C0H 002FFH 00040H NOTE_F             
+
+Program entry point at 0000:0000
+Warning: No stack
+
