@@ -1,5 +1,3 @@
-This is the player made with TASM x86 for reading and playing music in RingTone Text Transfer Language.
-
 **HOW TO BEGIN**
 
 1. Run DOSBox with manually installed TASM and 'make'
