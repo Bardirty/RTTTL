@@ -25,9 +25,9 @@ Progr           ends
 
 calc segment
                 assume cs:calc
-calc_pause:
+calc_pause proc far
                 xor dx, dx          ; Обнулить DX для деления
-                mov ax, 60000       ; 60000 миллисекунд в минуте
+                mov ax, 6000       ; 60000 миллисекунд в минуте
                 mov bx, [bpm]
                 cmp bx, 0           ; Проверить BPM
                 jz .error_div_by_zero
@@ -39,10 +39,11 @@ calc_pause:
                 div bx              ; AX = результат для длительности
                 mov [current_duration], ax
                 ret
+calc_pause endp
 
-calc_pause_WND:
+calc_pause_WND proc far
                 xor dx, dx          ; Обнулить DX для деления
-                mov ax, 60000       ; 60000 миллисекунд в минуте
+                mov ax, 6000       ; 60000 миллисекунд в минуте
                 mov bx, [bpm]
                 cmp bx, 0           ; Проверить BPM
                 jz .error_div_by_zero
@@ -54,7 +55,7 @@ calc_pause_WND:
                 div bx              ; AX = результат для длительности
                 mov [current_duration], ax
                 ret
-
+calc_pause_WND endp
 .error_div_by_zero:
                 lea dx, msg_error_div_by_zero ; Сообщение об ошибке
                 mov ah, 09h

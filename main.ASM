@@ -23,25 +23,75 @@ start:          mov     ax, dane
                 mov [note_to_play], 'C'
                 mov [note_to_play+1], 0
 				mov [new_octave], 7
-				mov [new_duration], 16
-				call calc_pause_WND
+				mov [current_duration], 3
+				;;call calc_pause_WND
                 call play_with_new
 				
-				mov [new_duration], 32
+				mov [current_duration], 2
 				;;call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'A'
                 mov [note_to_play+1], 0
 				mov [new_octave], 6
-				mov [new_duration], 8
+				mov [current_duration], 6
 				;;call calc_pause_WND
-                call play
+                call play_with_new
 				
-				mov [new_duration], 32
+				mov [current_duration], 2
 				;;call calc_pause_WND
 				call delay
 				
+				mov [note_to_play], 'C'
+                mov [note_to_play+1], 0
+				mov [new_octave], 7
+				mov [current_duration], 3
+				;;call calc_pause_WND
+                call play_with_new
+				
+				mov [current_duration], 2
+				;;call calc_pause_WND
+				call delay
+				
+				mov [note_to_play], 'B'
+                mov [note_to_play+1], 0
+				mov [new_octave], 6
+				mov [current_duration], 6
+				;;call calc_pause_WND
+                call play_with_new
+				
+				mov [current_duration], 2
+				;;call calc_pause_WND
+				call delay
+				
+				mov [note_to_play], 'C'
+                mov [note_to_play+1], 0
+				mov [new_octave], 7
+				mov [current_duration], 3
+				;;call calc_pause_WND
+                call play_with_new
+				
+				mov [current_duration], 2
+				;;call calc_pause_WND
+				call delay
+				
+				mov [note_to_play], 'B'
+                mov [note_to_play+1], 0
+				mov [new_octave], 6
+				mov [current_duration], 6
+				;;call calc_pause_WND
+                call play_with_new
+				
+				mov [current_duration], 2
+				;;call calc_pause_WND
+				call delay
+				
+				mov [note_to_play], 'G'
+                mov [note_to_play+1], 0
+				mov [new_octave], 6
+				mov [current_duration], 15
+				;;call calc_pause_WND
+                call play_with_new
 				
                 mov ah, RetToDos
                 mov al, Ok
