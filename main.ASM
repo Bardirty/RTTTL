@@ -23,74 +23,74 @@ start:          mov     ax, dane
                 mov [note_to_play], 'C'
                 mov [note_to_play+1], 0
 				mov [new_octave], 7
-				mov [current_duration], 3
-				;;call calc_pause_WND
+				mov [new_duration], 16
+				call calc_pause_WND
                 call play_with_new
 				
-				mov [current_duration], 2
-				;;call calc_pause_WND
+				mov [new_duration], 32
+				call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'A'
                 mov [note_to_play+1], 0
 				mov [new_octave], 6
-				mov [current_duration], 6
-				;;call calc_pause_WND
+				mov [new_duration], 8
+				call calc_pause_WND
                 call play_with_new
 				
-				mov [current_duration], 2
-				;;call calc_pause_WND
+				mov [new_duration], 32
+				call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'C'
                 mov [note_to_play+1], 0
 				mov [new_octave], 7
-				mov [current_duration], 3
-				;;call calc_pause_WND
+				mov [new_duration], 16
+				call calc_pause_WND
                 call play_with_new
 				
-				mov [current_duration], 2
-				;;call calc_pause_WND
+				mov [new_duration], 32
+				call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'B'
                 mov [note_to_play+1], 0
 				mov [new_octave], 6
-				mov [current_duration], 6
-				;;call calc_pause_WND
+				mov [new_duration], 8
+				call calc_pause_WND
                 call play_with_new
 				
-				mov [current_duration], 2
-				;;call calc_pause_WND
+				mov [new_duration], 32
+				call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'C'
                 mov [note_to_play+1], 0
 				mov [new_octave], 7
-				mov [current_duration], 3
-				;;call calc_pause_WND
+				mov [new_duration], 16
+				call calc_pause_WND
                 call play_with_new
 				
-				mov [current_duration], 2
-				;;call calc_pause_WND
+				mov [new_duration], 32
+				call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'B'
                 mov [note_to_play+1], 0
 				mov [new_octave], 6
-				mov [current_duration], 6
-				;;call calc_pause_WND
+				mov [new_duration], 6
+				call calc_pause_WND
                 call play_with_new
 				
-				mov [current_duration], 2
-				;;call calc_pause_WND
+				mov [new_duration], 32
+				call calc_pause_WND
 				call delay
 				
 				mov [note_to_play], 'G'
                 mov [note_to_play+1], 0
 				mov [new_octave], 6
-				mov [current_duration], 15
-				;;call calc_pause_WND
+				mov [new_duration], 6
+				call calc_pause_WND
                 call play_with_new
 				
                 mov ah, RetToDos
@@ -123,7 +123,7 @@ dane            segment
                 basic_octave db 4
                 new_octave db 5
 				basic_duration dw 8
-				new_duration dw 18
+				new_duration dw 4
 				current_duration dw 8
 				bpm dw 100
                 note_to_play db 2 dup(0)
