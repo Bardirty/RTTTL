@@ -7,6 +7,8 @@ ASSUME cs:note_f
 find_note proc far
     mov di, 0
     mov cx, 12
+	xor bx,bx
+	xor dx,dx
 .find_note_loop:
     mov al, [note_index + di]
     cmp al, [note_to_play]
@@ -25,6 +27,9 @@ find_note proc far
     lea dx, msg_note_error
     mov ah, 09h
     int 21h
+	xor bx, bx  
+	mov ah, 4ch
+    int 21h	
     ret
 find_note endp
 

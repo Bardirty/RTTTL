@@ -1,4 +1,4 @@
-public play_sound, delay, stop_sound, calc_pause, calc_pause_WND
+public play_sound, delay, stop_sound, calc_pause
 
 extrn basic_duration:WORD, new_duration:WORD, current_duration:WORD, bpm:WORD
 
@@ -25,23 +25,8 @@ Progr           ends
 
 calc segment
                 assume cs:calc
+
 calc_pause proc far
-                xor dx, dx          ; Обнулить DX для деления
-                mov ax, 6000       ; 60000 миллисекунд в минуте
-                mov bx, [bpm]
-                cmp bx, 0           ; Проверить BPM
-                jz .error_div_by_zero
-                div bx              ; AX = 60000 / BPM
-
-                mov bx, [basic_duration]
-                cmp bx, 0           ; Проверить basic_duration
-                jz .error_div_by_zero
-                div bx              ; AX = результат для длительности
-                mov [current_duration], ax
-                ret
-calc_pause endp
-
-calc_pause_WND proc far
                 xor dx, dx          ; Обнулить DX для деления
                 mov ax, 6000       ; 60000 миллисекунд в минуте
                 mov bx, [bpm]
@@ -55,7 +40,7 @@ calc_pause_WND proc far
                 div bx              ; AX = результат для длительности
                 mov [current_duration], ax
                 ret
-calc_pause_WND endp
+calc_pause endp
 .error_div_by_zero:
                 lea dx, msg_error_div_by_zero ; Сообщение об ошибке
                 mov ah, 09h
