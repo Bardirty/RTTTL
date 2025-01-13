@@ -22,36 +22,13 @@ parse_rtttl proc far
     call parsesettingb
     ret
 parse_rtttl endp
-
-; -------------------------------
-; Пропустить имя мелодии до ':'
-skip_to_two_dots proc near
-next_char:
-    mov al, [rtttl_params + di]   ; Загрузить текущий символ
-    inc di                     ; Увеличить указатель
-    cmp al, ':'                ; Проверить, это ':'?
-    je end_skip                ; Если да, завершить
-    cmp al, 0                  ; Конец строки?
-    je error_end               ; Если да, завершить с ошибкой
-    jmp next_char
-end_skip:
-    ret
-error_end:
-	lea dx, msg_parseErr
-	mov ah, 09h
-	int 21h
-
-    mov ah, 4ch
-	int 21h
-    ret
-skip_to_two_dots endp
-
 ; -------------------------------
 ; Парсинг параметра d=<value>
 parsesettingd proc near
 	xor ax, ax
 	mov al, [rtttl_params + di]
-	mov cl, 'd'
+    mov cl, 'd'
+	call skiptochar
     cmp al, cl
     jne error_end          ; Если не 'd', перейти к следующей секции
     add di, 2                  ; Пропустить "d="

@@ -1,10 +1,6 @@
-DosIntr      equ    21h
-RetToDos     equ    4ch
-Ok           equ    0h
-
 include inc\lib.inc
 PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, basic_octave, new_octave, msg_overflow
-PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
+PUBLIC bpm, basic_duration, new_duration, current_duration, play
 PUBLIC rtttl_params, rtttl_notes, file_name,hexadecimal
 
 Progr           segment
@@ -18,13 +14,18 @@ start:          mov     ax, dane
                 mov     sp, offset szczyt
                 
 				call file_read
-                call parse_rtttl        ; Вызвать процедуру парсинга
-				call set_basic_octave
-				call parse_notes
+				
+				lea dx, rtttl_notes
+				mov ax, 0900h
+				int 21h
+                ;;call parse_rtttl        ; Вызвать процедуру парсинга
+				;;call set_basic_octave
+				;;call parse_notes
                 
-                mov ah, RetToDos
-                mov al, Ok
-                int DosIntr
+                mov ah, 4ch
+                mov al, 0
+                int 21h
+				ret
 
 play proc far
                 call find_note
@@ -65,16 +66,18 @@ dane            segment
                 bpm dw 100
                 note_to_play db 2 dup(0)
                 
-                note_buffer db 256 dup(0)
-                
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
-                
-                rtttl_params db "d=4,o=5,b=125", 0
-				rtttl_notes db "16c7,32p,8a6,32p,16c7,32p,8b6,32p,16c7,32p,8b6,32p,g6,p,16a6,32p,16e7,32p,8d7,32p,16c7,32p,8b6,32p,16c7,32p,8b6,32p,g6,p,16c7,32p,8a6,32p,16c7,32p,8b6,32p,16c7,32p,8b6,32p,g6,p,16a6,32p,8f6,32p,16a6,32p,8g6,32p,16a6,32p,8g6,32p,c6", 0
-                file_name db "melody.txt", 0
+				
+				file_name db "melody.txt", 0
                 hex db '0123456789ABCDEF'
+                
+				params_length db 0
+                rtttl_params db 16 dup(?)
+				notes_length db 0
+				rtttl_notes db 256 dup (?)
+				
                 
 dane            ends
 
