@@ -8,6 +8,9 @@ Example:
 > my_melody:d=4,o=5,b=100:c,c,a,a,g,g,c
 
 5. Build project by using `make`
+
+p.s. If you already used `make`, use `make clean` for rebuild project after your changes
+
 6. Open `main.exe` in DosBox
 7. Enjoy😊
 
