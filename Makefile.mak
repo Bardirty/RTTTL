@@ -12,12 +12,12 @@ OUTPUT = main.exe
 LIBRARY = intermediate.lib
 
 # Исходные файлы и объектные файлы
-SRC_FILES = main.asm src\note_f.asm src\sp_c.asm src\parms\set_oct.asm src\parms\set_nt.asm src\pars\rtttl_p.asm src\pars\note_pr.asm
-OBJ_FILES = main.obj src\note_f.obj src\sp_c.obj src\parms\set_oct.obj src\parms\set_nt.obj src\pars\rtttl_p.obj src\pars\note_pr.obj
+SRC_FILES = main.asm src\note_f.asm src\sp_c.asm src\parms\set_oct.asm src\parms\set_nt.asm src\pars\rtttl_p.asm src\pars\note_pr.asm src\pars\file_rd.asm
+OBJ_FILES = main.obj src\note_f.obj src\sp_c.obj src\parms\set_oct.obj src\parms\set_nt.obj src\pars\rtttl_p.obj src\pars\note_pr.obj src\pars\file_rd.obj
 
 # Группы объектных файлов для библиотеки
 LIB_GROUP = src\note_f.obj src\sp_c.obj src\parms\set_oct.obj src\parms\set_nt.obj
-OTHER_FILES = src\pars\rtttl_p.obj src\pars\note_pr.obj
+OTHER_FILES = src\pars\rtttl_p.obj src\pars\note_pr.obj src\pars\file_rd.obj
 
 # Правило по умолчанию
 all: $(OUTPUT)
@@ -25,7 +25,7 @@ all: $(OUTPUT)
 # Сборка исполняемого файла
 $(OUTPUT): $(LIBRARY) main.obj $(OTHER_FILES)
 	@echo ==== Linking $(OUTPUT)... ====
-	$(LINKER) main.obj +$(LIBRARY) +src\pars\rtttl_p.obj +src\pars\note_pr.obj, $(OUTPUT)
+	$(LINKER) main.obj +$(LIBRARY) +src\pars\rtttl_p.obj +src\pars\note_pr.obj +src\pars\file_rd.obj, $(OUTPUT)
 
 # Создание промежуточной библиотеки
 $(LIBRARY): $(LIB_GROUP)
@@ -72,6 +72,12 @@ src\pars\note_pr.obj: src\pars\note_pr.asm
 	@echo ---- Compiling src\pars\note_pr.asm ----
 	$(ASM) $(ASMFLAGS) src\pars\note_pr.asm
 	@move note_pr.obj src\pars\note_pr.obj >nul
+
+# Сборка объектного файла src\pars\file_rd.asm
+src\pars\file_rd.obj: src\pars\file_rd.asm
+	@echo ---- Compiling src\pars\file_rd.asm ----
+	$(ASM) $(ASMFLAGS) src\pars\file_rd.asm
+	@move file_rd.obj src\pars\file_rd.obj >nul
 
 # Очистка временных файлов
 clean:

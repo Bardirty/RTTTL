@@ -8,14 +8,6 @@ play_sound:
                 or  al, 00000011b
                 out 61h, al
                 ret
-
-delay:
-                xor dx, dx
-                mov cx, [current_duration]
-                mov ah, 86h
-                int 15h
-                ret
-
 stop_sound:
                 in  al, 61h
                 and al, 11111100b
@@ -25,10 +17,17 @@ Progr           ends
 
 calc segment
                 assume cs:calc
-
+				
+delay proc far
+                xor dx, dx
+                mov cx, [current_duration]
+                mov ah, 86h
+                int 15h
+                ret
+delay endp
 calc_pause proc far
                 xor dx, dx          ; Обнулить DX для деления
-                mov ax, 6000       ; 60000 миллисекунд в минуте
+                mov ax, 4000       ; 60000 миллисекунд в минуте
                 mov bx, [bpm]
                 cmp bx, 0           ; Проверить BPM
                 jz .error_div_by_zero

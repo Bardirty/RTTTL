@@ -5,7 +5,7 @@ Ok           equ    0h
 include inc\lib.inc
 PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, basic_octave, new_octave, msg_overflow
 PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
-PUBLIC rtttl_str
+PUBLIC rtttl_params, rtttl_notes, file_name,hexadecimal
 
 Progr           segment
                 assume  cs:Progr, ds:dane, ss:stosik
@@ -16,56 +16,17 @@ start:          mov     ax, dane
                 mov     ss, ax
                 assume  ss:stosik
                 mov     sp, offset szczyt
-				
-				mov ax, 0
-				mov ax, [basic_duration]
-				call hexadecimal
-				mov ax, 0
-				mov al, [new_octave]
-				call hexadecimal
-				mov ax, 0
-				mov ax, [bpm]
-				call hexadecimal
-				
-				
+                
+				call file_read
                 call parse_rtttl        ; Вызвать процедуру парсинга
-				
-				mov ax, 0
-				mov ax, [basic_duration]
-				call hexadecimal
-				mov ax, 0
-				mov al, [new_octave]
-				call hexadecimal
-				mov ax, 0
-				mov ax, [bpm]
-				call hexadecimal
-				
-                call set_basic_octave
-				mov ax, 0
-				mov al, [basic_octave]			
-				call hexadecimal
-				
-				call parse_note
-				
-				;;mov ah, RetToDos
-                ;;mov al, Ok
-                ;;int DosIntr
-				;;ret
-				
-                mov [note_to_play], 'c'
-                mov [note_to_play+1], 0
-				
-				push [basic_duration]
-				pop [new_duration]				
-				call calc_pause
-                call play
-				
-				
+				call set_basic_octave
+				call parse_notes
+                
                 mov ah, RetToDos
                 mov al, Ok
                 int DosIntr
-                
-play:
+
+play proc far
                 call find_note
                 call set_octave_note
                 call set_note
@@ -73,21 +34,22 @@ play:
                 call delay
                 call stop_sound
                 ret
+play endp
 
-hexadecimal:
-		mov bx, ax
-         mov ah, 2
-         mov cx, 4
-kolejh:  mov si, 000Fh
-         rol bx, 4
-         and si, bx
-         mov dl, hex[si]
-hmin:    int 21h
-         loop kolejh
-		 mov ax, bx
-         ret
-		 
-		 
+hexadecimal proc far
+                mov bx, ax
+                mov ah, 2
+                mov cx, 4
+kolejh:         mov si, 000Fh
+                rol bx, 4
+                and si, bx
+                mov dl, hex[si]
+hmin:           int 21h
+                loop kolejh
+                mov ax, bx
+                ret
+hexadecimal endp
+                 
 Progr           ends
 
 dane            segment
@@ -107,11 +69,12 @@ dane            segment
                 
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
-				msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
+                msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
                 
-                rtttl_str db "sonic:d=8,o=5,b=125:16c7,32p,8a6,32p", 0
-				
-				hex db '0123456789ABCDEF'
+                rtttl_params db "d=4,o=5,b=125", 0
+				rtttl_notes db "16c7,32p,8a6,32p,16c7,32p,8b6,32p,16c7,32p,8b6,32p,g6,p,16a6,32p,16e7,32p,8d7,32p,16c7,32p,8b6,32p,16c7,32p,8b6,32p,g6,p,16c7,32p,8a6,32p,16c7,32p,8b6,32p,16c7,32p,8b6,32p,g6,p,16a6,32p,8f6,32p,16a6,32p,8g6,32p,16a6,32p,8g6,32p,c6", 0
+                file_name db "melody.txt", 0
+                hex db '0123456789ABCDEF'
                 
 dane            ends
 

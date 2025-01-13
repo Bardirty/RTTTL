@@ -1,5 +1,5 @@
 ; Экспортируемая процедура
-public parse_rtttl, readnumber
+public parse_rtttl
 
 ; Входные данные
 ; ds:si указывает на строку формата RTTTL
@@ -9,13 +9,13 @@ public parse_rtttl, readnumber
 
 extrn basic_duration:word, new_duration:word, new_octave:byte, bpm:word
 extrn note_buffer:byte, note_to_play:byte
-extrn rtttl_str:byte, msg_parseErr:byte
+extrn rtttl_params:byte, msg_parseErr:byte, hexadecimal:far
 parsing segment
     assume cs:parsing
 
 parse_rtttl proc far
     mov di, 0                  ; Указатель в строке
-    call skip_to_two_dots        ; Пропустить имя мелодии
+    ;call skip_to_two_dots        ; Пропустить имя мелодии
     ; Разбор параметров d=, o=, b=
     call parsesettingd
     call parsesettingo
@@ -27,7 +27,7 @@ parse_rtttl endp
 ; Пропустить имя мелодии до ':'
 skip_to_two_dots proc near
 next_char:
-    mov al, [rtttl_str + di]   ; Загрузить текущий символ
+    mov al, [rtttl_params + di]   ; Загрузить текущий символ
     inc di                     ; Увеличить указатель
     cmp al, ':'                ; Проверить, это ':'?
     je end_skip                ; Если да, завершить
@@ -50,7 +50,7 @@ skip_to_two_dots endp
 ; Парсинг параметра d=<value>
 parsesettingd proc near
 	xor ax, ax
-	mov al, [rtttl_str + di]
+	mov al, [rtttl_params + di]
 	mov cl, 'd'
     cmp al, cl
     jne error_end          ; Если не 'd', перейти к следующей секции
@@ -64,7 +64,7 @@ parsesettingd endp
 ; Парсинг параметра o=<value>
 parsesettingo proc near
     xor ax, ax
-	mov al, [rtttl_str + di]
+	mov al, [rtttl_params + di]
 	mov cl, 'o'
 	call skiptochar
     cmp al, cl
@@ -79,7 +79,7 @@ parsesettingo endp
 ; Парсинг параметра b=<value>
 parsesettingb proc near
     xor ax, ax
-	mov al, [rtttl_str + di]
+	mov al, [rtttl_params + di]
 	mov cl, 'b'
 	call skiptochar
     cmp al, cl
@@ -94,7 +94,7 @@ parsesettingb endp
 ; Пропустить до символа
 skiptochar proc near
 next_char_2:
-    mov al, [rtttl_str + di]   ; Загрузить символ
+    mov al, [rtttl_params + di]   ; Загрузить символ
     cmp al, cl                 ; Проверить символ
     je found_char
 	inc di
@@ -107,13 +107,13 @@ skiptochar endp
 
 ; -------------------------------
 ; Считать число из строки
-readnumber proc
+readnumber proc near
     xor ax, ax                 ; Очистить ax
 	xor cx, cx
     mov bx, 10                 ; Основание 10
 
 readloop:
-    mov cl, [rtttl_str + di]   ; Загрузить символ
+    mov cl, [rtttl_params + di]   ; Загрузить символ
     inc di                     ; Увеличить указатель
 	sub cl, '0'                ; Преобразовать ASCII в число
     cmp cl, 0                ; Проверить, это цифра?
