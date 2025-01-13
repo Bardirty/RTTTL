@@ -51,7 +51,7 @@ skip_comma:
     mov [note_to_play + 1], al
     inc si                     ; Перейти после диеза
 skip_sharp:
-
+	call check_dot
     ; Проверить октаву
     call check_octave
     call calc_pause 
@@ -124,6 +124,19 @@ end_read:
     ret
 readnumber endp
 
+
+check_dot proc near
+    mov ax, new_duration          ; Сохранить текущую длительность в AX
+check_dot_loop:
+    cmp [rtttl_notes + si], '.'   ; Проверить, есть ли точка
+    jne end_dot                   ; Если нет точки, выйти
+    shr ax, 1                     ; Уменьшить длительность на 50%
+    add new_duration, ax          ; Добавить к общей длительности
+    inc si                        ; Перейти к следующему символу
+    jmp check_dot_loop            ; Продолжить проверку на точки
+end_dot:
+    ret
+check_dot endp
 notes ends
 
 notes_data segment

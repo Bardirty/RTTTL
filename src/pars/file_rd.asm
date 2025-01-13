@@ -104,9 +104,6 @@ skip_name_done:
 skip_name endp
 
 
-
-
-
 file ends
 
 file_data segment

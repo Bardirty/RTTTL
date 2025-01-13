@@ -1,6 +1,6 @@
 include inc\lib.inc
 PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, basic_octave, new_octave, msg_overflow
-PUBLIC bpm, basic_duration, new_duration, current_duration, play
+PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
 PUBLIC rtttl_params, rtttl_notes, file_name,hexadecimal
 
 Progr           segment
@@ -13,14 +13,10 @@ start:          mov     ax, dane
                 assume  ss:stosik
                 mov     sp, offset szczyt
                 
-				call file_read
-				
-				lea dx, rtttl_notes
-				mov ax, 0900h
-				int 21h
-                ;;call parse_rtttl        ; Вызвать процедуру парсинга
-				;;call set_basic_octave
-				;;call parse_notes
+				;;call file_read
+                call parse_rtttl        ; Вызвать процедуру парсинга
+				call set_basic_octave
+				call parse_notes
                 
                 mov ah, 4ch
                 mov al, 0
@@ -66,18 +62,16 @@ dane            segment
                 bpm dw 100
                 note_to_play db 2 dup(0)
                 
+                note_buffer db 256 dup(0)
+                
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
-				
-				file_name db "melody.txt", 0
-                hex db '0123456789ABCDEF'
                 
-				params_length db 0
-                rtttl_params db 16 dup(?)
-				notes_length db 0
-				rtttl_notes db 256 dup (?)
-				
+                rtttl_params db "d=4,o=5,b=160", 0
+				rtttl_notes db "c.6,e6,f#6,8a6,g.6,e6,c6,8a,8f#,8f#,8f#,2g,8p,8p,8f#,8f#,8f#,8g,a#.,8c6,8c6,8c6,c6", 0
+                file_name db "melody.txt", 0
+                hex db '0123456789ABCDEF'
                 
 dane            ends
 
