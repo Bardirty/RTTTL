@@ -5,3 +5,4 @@ extrn parse_rtttl:far
 extrn parse_notes:far
 extrn file_read:far
 extrn buffer:byte
+extrn show_disco:far

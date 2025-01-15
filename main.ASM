@@ -1,7 +1,7 @@
 include inc\lib.inc
 PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, basic_octave, new_octave, msg_overflow
 PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
-PUBLIC rtttl_name, file_name,hexadecimal, line_buf, bytesRead
+PUBLIC rtttl_name, file_name, line_buf, bytesRead, color_cycle, file_msg
 
 Progr           segment
                 assume  cs:Progr, ds:dane, ss:stosik
@@ -13,12 +13,17 @@ start:          mov     ax, dane
                 assume  ss:stosik
                 mov     sp, offset szczyt
                 
+				mov ah, 0Ah
+				mov dx, offset buffer_file_rd
+				int 21h
+				
+				mov ah,09h
+				lea dx,new_line
+				int 21h
+				
 				call file_read
                 call parse_rtttl
 				call set_basic_octave
-				
-				lea di, rtttl_name
-				call show_line
 				
 				call parse_notes                
                 mov ah, 4ch
@@ -27,6 +32,7 @@ start:          mov     ax, dane
 				ret
 
 play proc far
+				call show_disco
                 call find_note
                 call set_octave_note
                 call set_note
@@ -35,34 +41,6 @@ play proc far
                 call stop_sound
                 ret
 play endp
-
-hexadecimal proc far
-                mov bx, ax
-                mov ah, 2
-                mov cx, 4
-kolejh:         mov si, 000Fh
-                rol bx, 4
-                and si, bx
-                mov dl, hex[si]
-hmin:           int 21h
-                loop kolejh
-                mov ax, bx
-                ret
-hexadecimal endp
-
-show_line:
-	mov ah, 02h
-	xor dx,dx
-line_loop:
-	mov dl, [di]
-	cmp dl, '$'
-	je loop_end
-	inc di
-	int 21h
-jmp line_loop
-loop_end:
-ret
-
 
 Progr           ends
 
@@ -85,15 +63,19 @@ dane            segment
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
-				
-				
-				msg_ok_1 db 10,13,"Params. OK!$"
+				file_msg db "Error reading file!$"
               
 				rtttl_name db 16 dup(?)
 				line_buf db 256 dup(?)
-	
-                file_name db "melody.txt", 0
-                hex db '0123456789ABCDEF'
+				
+				buffer_file_rd db 32
+				file_len db ?
+                file_name db 31 dup(0)
+				
+				color_cycle db 0
+				
+				new_line db 10,13,'$'
+				msg_ok_1 db 10,13,"Params. OK!$"
                 
 dane            ends
 

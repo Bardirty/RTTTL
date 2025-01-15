@@ -1,10 +1,9 @@
 public file_read
 
-extrn file_name:byte, rtttl_name:byte, line_buf:byte, note_buffer:byte, bytesRead:word
+extrn file_name:byte, rtttl_name:byte, line_buf:byte, note_buffer:byte, bytesRead:word, file_msg:byte
 
 file segment
     assume cs:file
-    assume ds:file_data
 
 file_read proc far
     lea dx, file_name
@@ -39,7 +38,7 @@ file_read proc far
 
 file_error:
     mov ah, 09h             
-    lea dx, error_msg       
+    lea dx, file_msg       
     int 21h
     mov ah, 4Ch             
     mov al, 1               
@@ -84,8 +83,4 @@ parse_all_done:
 parse_all endp
 
 file ends
-
-file_data segment              
-    error_msg db "Error reading file!$"
-file_data ends
 end
