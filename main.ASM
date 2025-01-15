@@ -13,6 +13,11 @@ start:          mov     ax, dane
                 assume  ss:stosik
                 mov     sp, offset szczyt
                 
+				
+				lea dx, main_msg
+				mov ah, 09h
+				int 21h
+				
 				mov ah, 0Ah
 				mov dx, offset buffer_file_rd
 				int 21h
@@ -60,6 +65,8 @@ dane            segment
                 note_buffer db 256 dup(0)
 				bytesRead dw 0
                 
+				
+				main_msg db 10,13,"Give the song's path(ex: music\{file_name}.txt): $"
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
