@@ -26,26 +26,26 @@ delay proc far
                 ret
 delay endp
 calc_pause proc far
-                xor dx, dx          ; Обнулить DX для деления
-                mov ax, 4000       ; 60000 миллисекунд в минуте
-                mov bx, [bpm]
-                cmp bx, 0           ; Проверить BPM
+                xor dx, dx          
+                mov ax, 4000      
+                mov bx, bpm
+                cmp bx, 0           
                 jz .error_div_by_zero
-                div bx              ; AX = 60000 / BPM
+                div bx              
 
                 mov bx, [new_duration]
-                cmp bx, 0           ; Проверить new_duration
+                cmp bx, 0           
                 jz .error_div_by_zero
-                div bx              ; AX = результат для длительности
+                div bx              
                 mov [current_duration], ax
                 ret
 calc_pause endp
 .error_div_by_zero:
-                lea dx, msg_error_div_by_zero ; Сообщение об ошибке
+                lea dx, msg_error_div_by_zero
                 mov ah, 09h
                 int 21h
-                mov ah, 4Ch        ; Завершить программу
-                mov al, 1          ; Код ошибки
+                mov ah, 4Ch        
+                mov al, 1          
                 int 21h
 calc           ends
 

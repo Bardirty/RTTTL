@@ -6,12 +6,12 @@ assume cs:set_new_note
 set_octave_note proc far
 	mov dx, bx
 	xor bx,bx
-    mov al, [basic_octave]       ; Текущая октава
-    mov bl, [new_octave]          ; Новая октава
-    cmp al, bl                   ; Сравнить текущую и новую
-    je .done                     ; Если равны, завершить
+    mov al, [basic_octave]
+    mov bl, [new_octave]          
+    cmp al, bl                   
+    je .done                     
 
-    jb .increase                 ; Если новая больше текущей
+    jb .increase                 
 .decrease: 
 	call remainder
 	neg cl
@@ -20,30 +20,28 @@ set_octave_note proc far
 
 .increase:
 	call remainder
-    call increase_frequencies    ; Увеличить частоты
+    call increase_frequencies
 .done:
 	mov bx,dx
     ret
 set_octave_note endp
 
-; Увеличить частоты в note_freq на 2^n с проверкой переполнения
 increase_frequencies:
-    shl dx, cl                   ; Умножить на 2^n
+    shl dx, cl                   
     jc .overflow
     ret
 .overflow:
-    lea dx, msg_overflow         ; Сообщение об ошибке
+    lea dx, msg_overflow
     mov ah, 09h
     int 21h
     ret
 
-; Уменьшить частоты в note_freq на 2^n
 decrease_frequencies:
     shr dx, cl
     ret
 	
 remainder:
-	sub bl, al                   ; Вычислить разницу (current - new)
+	sub bl, al
     mov cl, bl
 	ret
 

@@ -1,5 +1,3 @@
-; Парсер нот для RTTTL
-; Этот файл содержит только процедуры, связанные с разбором нот
 public parse_notes
 
 extrn rtttl_notes:byte, note_to_play:byte, basic_duration:word, new_duration:word
@@ -7,23 +5,29 @@ extrn basic_octave:byte, new_octave:byte, play:far, calc_pause:far, delay:far, h
 
 notes segment
     assume cs:notes, ds:notes_data
-; Основная процедура для разбора нот
+	mov ax, notes_data
+	mov ds, ax
+	assume ds:notes_data
+	
 parse_notes proc far
-    mov si, 0                  ; Установить начальную позицию в строке
 parse_notes_loop:
-    cmp [rtttl_notes + si], 0  ; Проверить конец строки
-    je parse_notes_end         ; Если достигнут конец, выйти из цикла
+	mov al, [si]
+    cmp al, '$'
+    je parse_notes_end
+	cmp al, ' '
+    je parse_notes_end         
+	cmp al, 0
+    je parse_notes_end         
 
-    call parse_single_note     ; Разобрать одну ноту
-    jmp parse_notes_loop       ; Продолжить цикл
+    call parse_single_note     
+    jmp parse_notes_loop      
 parse_notes_end:
     ret
 parse_notes endp
 
 
-; Разбор одной ноты
 parse_single_note proc near
-	mov al, [rtttl_notes + si]
+	mov al, [si]
 	cmp al, ','
 	jne skip_comma
 	inc si
@@ -31,28 +35,29 @@ skip_comma:
     call check_duration
 
     ; Сохранить ноту
-    mov al, [rtttl_notes + si]
+    mov al, [si]
 	cmp al, 'p'
 	je parse_pause
 	
 	
-    cmp al, 'a'                ; Проверить, является ли символ нотой
+    cmp al, 'a'                
     jl invalid_note
     cmp al, 'g'
     jg invalid_note
 
     mov [note_to_play], al
-    inc si                     ; Перейти к следующему символу
+	xor dx,dx
+    inc si          
 	mov [note_to_play + 1], 0
-    ; Проверить на диез
-    cmp [rtttl_notes + si], '#'
+
+	mov al, [si]
+    cmp al, '#'
     jne skip_sharp
-    mov al, [rtttl_notes + si]
     mov [note_to_play + 1], al
-    inc si                     ; Перейти после диеза
+    inc si
 skip_sharp:
 	call check_dot
-    ; Проверить октаву
+
     call check_octave
     call calc_pause 
     call play
@@ -60,24 +65,23 @@ skip_sharp:
 parse_single_note endp
 
 invalid_note:
-    lea dx, msg_invalid_note   ; Сообщение об ошибке
+    lea dx, msg_invalid_note
     mov ah, 09h
     int 21h
     ret
 
 parse_pause:
-    call calc_pause           ; Рассчитать длительность паузы
-    call delay                ; Выполнить паузу
+    call calc_pause
+    call delay
 	inc si
     ret
 
 check_duration proc near
-    cmp [rtttl_notes + si], '0'  ; Проверить, начинается ли с цифры
-    jl use_basic_duration
-    cmp [rtttl_notes + si], '9'
+    mov al, [si]
+	sub al, '0'
+    cmp al, 10
     jg use_basic_duration
 
-    ; Если цифра, прочитать значение
     call readnumber
     mov new_duration, ax
     ret
@@ -89,12 +93,11 @@ use_basic_duration:
 check_duration endp
 
 check_octave proc near
-    cmp [rtttl_notes + si], '0'  ; Проверить, начинается ли с цифры
-    jl use_basic_octave
-    cmp [rtttl_notes + si], '9'
-    jg use_basic_octave
+	mov al, [si]
+	sub al, '0'
+    cmp al, 10
+    jnc use_basic_octave
 
-    ; Если цифра, прочитать значение
     call readnumber
     mov new_octave, al
     ret
@@ -110,7 +113,7 @@ readnumber proc near
 	xor cx, cx
     mov bx, 10
 read_loop:
-    mov cl, [rtttl_notes + si]
+    mov cl, [si]
     cmp cl, '0'
     jl end_read
     cmp cl, '9'
@@ -126,14 +129,14 @@ readnumber endp
 
 
 check_dot proc near
-    mov ax, new_duration          ; Сохранить текущую длительность в AX
+    mov ax, new_duration
 check_dot_loop:
-    cmp [rtttl_notes + si], '.'   ; Проверить, есть ли точка
-    jne end_dot                   ; Если нет точки, выйти
-    shr ax, 1                     ; Уменьшить длительность на 50%
-    add new_duration, ax          ; Добавить к общей длительности
-    inc si                        ; Перейти к следующему символу
-    jmp check_dot_loop            ; Продолжить проверку на точки
+	mov bl, [si]
+    cmp bl, '.'
+    jne end_dot                 
+    inc new_duration
+    inc si                      
+    jmp check_dot_loop          
 end_dot:
     ret
 check_dot endp

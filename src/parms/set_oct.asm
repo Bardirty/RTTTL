@@ -5,64 +5,62 @@ set_octave segment
 assume cs:set_octave
 
 set_basic_octave proc far
-    mov al, [basic_octave]       ; Текущая октава
-    mov bl, [new_octave]          ; Новая октава
-    cmp al, bl                   ; Сравнить текущую и новую
-    je .done                     ; Если равны, завершить
+    mov al, [basic_octave]       
+    mov bl, [new_octave]         
+    cmp al, bl               
+    je .done                 
 
-    jb .increase                 ; Если новая больше текущей
+    jb .increase             
 .decrease: 
 	call remainder
 	neg cl
-    call decrease_frequencies    ; Уменьшить частоты
-    mov bl, [new_octave]          ; Обновить текущую октаву
+    call decrease_frequencies
+    mov bl, [new_octave]     
     mov [basic_octave], bl
     jmp .done
 
 .increase:
 	call remainder
-    call increase_frequencies    ; Увеличить частоты
-    mov bl, [new_octave]          ; Обновить текущую октаву
+    call increase_frequencies
+    mov bl, [new_octave]     
     mov [basic_octave], bl
 
 .done:
     ret
 set_basic_octave endp
 
-; Увеличить частоты в note_freq на 2^n с проверкой переполнения
 increase_frequencies:
-    mov bl, 12                   ; Количество нот
-    lea di, [note_freq]          ; Указатель на массив частот
+    mov bl, 12               
+    lea di, [note_freq]      
 .inc_loop:
-    mov ax, [di]                 ; Загрузить частоту
-    shl ax, cl                   ; Умножить на 2^n
-    jc .overflow                 ; Проверить переполнение
-    mov [di], ax                 ; Сохранить частоту
-    add di, 2                    ; Перейти к следующей частоте
+    mov ax, [di]             
+    shl ax, cl               
+    jc .overflow             
+    mov [di], ax             
+    add di, 2                
     dec bl
 	jnz .inc_loop
     ret
 .overflow:
-    lea dx, msg_overflow         ; Сообщение об ошибке
+    lea dx, msg_overflow     
     mov ah, 09h
     int 21h
     ret
 
-; Уменьшить частоты в note_freq на 2^n
 decrease_frequencies:
-    mov bl, 12                   ; Количество нот
-    lea di, [note_freq]          ; Указатель на массив частот
+    mov bl, 12               
+    lea di, [note_freq]     
 .dec_loop:
-    mov ax, [di]                 ; Загрузить частоту
-    shr ax, cl                   ; Разделить на 2^n
-    mov [di], ax                 ; Сохранить частоту
-    add di, 2                    ; Перейти к следующей частоте
+    mov ax, [di]             
+    shr ax, cl               
+    mov [di], ax             
+    add di, 2                
     dec bl
 	jnz .dec_loop
     ret
 	
 remainder:
-	sub bl, al                   ; Вычислить разницу (current - new)
+	sub bl, al          
     mov cl, bl
 	ret
 

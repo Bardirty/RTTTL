@@ -1,7 +1,7 @@
 include inc\lib.inc
 PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, basic_octave, new_octave, msg_overflow
 PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
-PUBLIC rtttl_params, rtttl_notes, file_name,hexadecimal
+PUBLIC rtttl_name, file_name,hexadecimal, line_buf, bytesRead
 
 Progr           segment
                 assume  cs:Progr, ds:dane, ss:stosik
@@ -13,11 +13,14 @@ start:          mov     ax, dane
                 assume  ss:stosik
                 mov     sp, offset szczyt
                 
-				;;call file_read
-                call parse_rtttl        ; Вызвать процедуру парсинга
+				call file_read
+                call parse_rtttl
 				call set_basic_octave
-				call parse_notes
-                
+				
+				lea di, rtttl_name
+				call show_line
+				
+				call parse_notes                
                 mov ah, 4ch
                 mov al, 0
                 int 21h
@@ -46,13 +49,27 @@ hmin:           int 21h
                 mov ax, bx
                 ret
 hexadecimal endp
-                 
+
+show_line:
+	mov ah, 02h
+	xor dx,dx
+line_loop:
+	mov dl, [di]
+	cmp dl, '$'
+	je loop_end
+	inc di
+	int 21h
+jmp line_loop
+loop_end:
+ret
+
+
 Progr           ends
 
 dane            segment
                 nutC         dw 1193
                 note_freq    dw 261, 277, 293, 311, 329, 349, 369, 392, 415, 440, 466, 493
-                note_index   db 'c',  0, 'c', '#', 'd',  0, 'd', '#', 'e',  0, 'f',  0, 'f', '#', 'g',  0, 'g', '#', 'a',  0, 'a', '#', 'b',  0
+                note_index   db 'c',0,'c','#','d',0,'d','#','e',0,'f',0,'f','#','g',0,'g','#','a',0, 'a', '#', 'b',  0
                 
                 basic_octave db 4
                 new_octave db 5
@@ -63,13 +80,18 @@ dane            segment
                 note_to_play db 2 dup(0)
                 
                 note_buffer db 256 dup(0)
+				bytesRead dw 0
                 
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
-                
-                rtttl_params db "d=4,o=5,b=160", 0
-				rtttl_notes db "c.6,e6,f#6,8a6,g.6,e6,c6,8a,8f#,8f#,8f#,2g,8p,8p,8f#,8f#,8f#,8g,a#.,8c6,8c6,8c6,c6", 0
+				
+				
+				msg_ok_1 db 10,13,"Params. OK!$"
+              
+				rtttl_name db 16 dup(?)
+				line_buf db 256 dup(?)
+	
                 file_name db "melody.txt", 0
                 hex db '0123456789ABCDEF'
                 
