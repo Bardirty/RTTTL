@@ -1,9 +1,9 @@
 include inc\lib.inc
-PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, basic_octave, new_octave, msg_overflow
+PUBLIC note_index, note_to_play, note_freq, nutC, basic_octave, new_octave 
 PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
-PUBLIC rtttl_name, file_name, line_buf, bytesRead, color_cycle, file_msg
+PUBLIC rtttl_name, file_name, line_buf, bytesRead, color_cycle
 
-public msg_error_div_by_zero, msg_error_bpm_too_low
+public msg_note_error, msg_parseErr, msg_error_div_by_zero, msg_error_bpm_too_low, msg_invalid_note, msg_overflow, file_msg, msg_invalid_note
 
 Progr           segment
                 assume  cs:Progr, ds:dane, ss:stosik
@@ -73,9 +73,9 @@ dane            segment
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
 				file_msg db "Error reading file!$"
-				
 				msg_error_div_by_zero db 10, 13, "Error: Division by zero!$", 0
                 msg_error_bpm_too_low db 10, 13, "Error: BPM is too low! Minimum is 50.$", 0
+				msg_invalid_note db 10, 13, "ERROR: Invalid note found in RTTTL string!$"
               
 				rtttl_name db 64 dup(?)
 				line_buf db 4096 dup(?)

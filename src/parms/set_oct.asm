@@ -1,6 +1,5 @@
 PUBLIC set_basic_octave
 EXTRN basic_octave:BYTE, new_octave:BYTE, note_freq:WORD, msg_overflow:BYTE
-EXTRN nutC:WORD
 set_octave segment
 assume cs:set_octave
 

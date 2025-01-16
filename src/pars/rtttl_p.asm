@@ -1,8 +1,7 @@
 public parse_rtttl
 
-extrn basic_duration:word, new_duration:word, new_octave:byte, bpm:word
-extrn note_buffer:byte, note_to_play:byte
-extrn msg_parseErr:byte, hexadecimal:far, line_buf:byte
+extrn basic_duration:word, new_octave:byte, bpm:word
+extrn msg_parseErr:byte, line_buf:byte
 parsing segment
     assume cs:parsing
 

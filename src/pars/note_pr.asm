@@ -1,13 +1,11 @@
 public parse_notes
 
-extrn rtttl_notes:byte, note_to_play:byte, basic_duration:word, new_duration:word
-extrn basic_octave:byte, new_octave:byte, play:far, calc_pause:far, delay:far, hexadecimal:far
+extrn note_to_play:byte, basic_duration:word, new_duration:word
+extrn basic_octave:byte, new_octave:byte, play:far, calc_pause:far, delay:far
+extrn msg_invalid_note:byte
 
 notes segment
-    assume cs:notes, ds:notes_data
-	mov ax, notes_data
-	mov ds, ax
-	assume ds:notes_data
+    assume cs:notes
 	
 parse_notes proc far
 parse_notes_loop:
@@ -34,7 +32,6 @@ parse_single_note proc near
 skip_comma:
     call check_duration
 
-    ; Сохранить ноту
     mov al, [si]
 	cmp al, 'p'
 	je parse_pause
@@ -141,9 +138,5 @@ end_dot:
     ret
 check_dot endp
 notes ends
-
-notes_data segment
-    msg_invalid_note db 10, 13, "ERROR: Invalid note found in RTTTL string!$"
-notes_data ends
 
 end

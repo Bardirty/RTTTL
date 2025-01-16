@@ -1,6 +1,6 @@
 public play_sound, delay, stop_sound, calc_pause
 
-extrn basic_duration:WORD, new_duration:WORD, current_duration:WORD, bpm:WORD
+extrn new_duration:WORD, current_duration:WORD, bpm:WORD
 extrn msg_error_div_by_zero:byte, msg_error_bpm_too_low:byte
 
 Progr           segment
@@ -31,7 +31,6 @@ calc_pause proc far
                 mov ax, 4000       
                 mov bx, bpm
 
-                ; Проверка минимального значения BPM
                 cmp bx, 50          
                 jc .error_bpm_too_low
 
