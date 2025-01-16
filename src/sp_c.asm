@@ -33,7 +33,7 @@ calc_pause proc far
 
                 ; Проверка минимального значения BPM
                 cmp bx, 50          
-                jl .error_bpm_too_low
+                jc .error_bpm_too_low
 
                 cmp bx, 0          
                 jz .error_div_by_zero
