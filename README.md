@@ -3,7 +3,7 @@
 1. Run DOSBox with manually installed TASM and 'make'
 2. Clone repository in your home virtual directory.
 3. Open project directory: `cd rtttl`
-4. Write your melody text document in rtttl language ro `\music\` directory.
+4. Write your melody text document in rtttl language to `\music\` directory.
 Example:
 > my_melody:d=4,o=5,b=100:c,c,a,a,g,g,c
 
