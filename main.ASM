@@ -3,6 +3,8 @@ PUBLIC note_index, note_to_play, note_freq, msg_note_error, msg_parseErr, nutC, 
 PUBLIC bpm, basic_duration, new_duration, current_duration, note_buffer, play
 PUBLIC rtttl_name, file_name, line_buf, bytesRead, color_cycle, file_msg
 
+public msg_error_div_by_zero, msg_error_bpm_too_low
+
 Progr           segment
                 assume  cs:Progr, ds:dane, ss:stosik
 start:          mov     ax, dane
@@ -71,6 +73,9 @@ dane            segment
                 msg_overflow db 10,13, "ERROR: Overflow!$"
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
 				file_msg db "Error reading file!$"
+				
+				msg_error_div_by_zero db 10, 13, "Error: Division by zero!$", 0
+                msg_error_bpm_too_low db 10, 13, "Error: BPM is too low! Minimum is 50.$", 0
               
 				rtttl_name db 64 dup(?)
 				line_buf db 4096 dup(?)

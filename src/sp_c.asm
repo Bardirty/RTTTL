@@ -1,6 +1,7 @@
 public play_sound, delay, stop_sound, calc_pause
 
 extrn basic_duration:WORD, new_duration:WORD, current_duration:WORD, bpm:WORD
+extrn msg_error_div_by_zero:byte, msg_error_bpm_too_low:byte
 
 Progr           segment
 play_sound:
@@ -27,19 +28,32 @@ delay proc far
 delay endp
 calc_pause proc far
                 xor dx, dx          
-                mov ax, 4000      
+                mov ax, 4000       
                 mov bx, bpm
-                cmp bx, 0           
+
+                ; Проверка минимального значения BPM
+                cmp bx, 50          
+                jl .error_bpm_too_low
+
+                cmp bx, 0          
                 jz .error_div_by_zero
                 div bx              
 
                 mov bx, [new_duration]
-                cmp bx, 0           
+                cmp bx, 0          
                 jz .error_div_by_zero
                 div bx              
                 mov [current_duration], ax
                 ret
-calc_pause endp
+
+.error_bpm_too_low:
+                lea dx, msg_error_bpm_too_low
+                mov ah, 09h
+                int 21h
+                mov ah, 4Ch        
+                mov al, 1          
+                int 21h
+
 .error_div_by_zero:
                 lea dx, msg_error_div_by_zero
                 mov ah, 09h
@@ -47,9 +61,7 @@ calc_pause endp
                 mov ah, 4Ch        
                 mov al, 1          
                 int 21h
-calc           ends
+calc_pause endp
 
-data segment
-                msg_error_div_by_zero db 10, 13, "Error: Division by zero!$", 0
-data           ends
+calc           ends
 end
