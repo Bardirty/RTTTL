@@ -9,7 +9,7 @@ Example:
 
 5. Build project by using `make`
 
-p.s. If you already used `make`, use `make clean` for rebuild project after your changes
+p.s. If you already used `make`, use `make clean` for clean old build files and `make` to build again after your changes
 
 6. Open `main.exe` in DosBox
 7. Write the path for your music into console. Ex:`music\abc.txt`
