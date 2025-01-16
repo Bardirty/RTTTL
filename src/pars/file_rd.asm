@@ -14,7 +14,7 @@ file_read proc far
     mov bx, ax       
 	
     lea dx, note_buffer      
-    mov cx, 256              
+    mov cx, 4096              
     mov ah, 3Fh              
     int 21h
     jc file_error            
@@ -71,7 +71,7 @@ parse_all_loop:
     jae parse_all_done
     mov al, [si]
     inc si
-    cmp di, offset line_buf + 256
+    cmp di, offset line_buf + 4096
     jae parse_all_done
     mov [di], al
     inc di

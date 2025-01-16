@@ -62,7 +62,7 @@ dane            segment
                 bpm dw 100
                 note_to_play db 2 dup(0)
                 
-                note_buffer db 256 dup(0)
+                note_buffer db 4096 dup(0)
 				bytesRead dw 0
                 
 				
@@ -72,8 +72,8 @@ dane            segment
                 msg_parseErr db 10,13, "ERROR: Parsing terminated!$"
 				file_msg db "Error reading file!$"
               
-				rtttl_name db 16 dup(?)
-				line_buf db 256 dup(?)
+				rtttl_name db 64 dup(?)
+				line_buf db 4096 dup(?)
 				
 				buffer_file_rd db 32
 				file_len db ?
