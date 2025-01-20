@@ -1,5 +1,5 @@
 PUBLIC find_note, set_note
-EXTRN msg_note_error:BYTE, note_index:BYTE, note_to_play:BYTE, note_freq:WORD, nutC:WORD
+EXTRN msg_note_error:BYTE, note_index:BYTE, note_to_play:BYTE, note_freq:WORD, timer_freq:WORD
 
 note_f segment
 ASSUME cs:note_f
@@ -34,7 +34,7 @@ find_note proc far
 find_note endp
 
 set_note proc far
-    mov ax, nutC
+    mov ax, timer_freq
     mov cx, 1000
     mul cx
     div bx

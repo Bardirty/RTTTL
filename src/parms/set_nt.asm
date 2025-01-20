@@ -6,8 +6,8 @@ assume cs:set_new_note
 set_octave_note proc far
 	mov dx, bx
 	xor bx,bx
-    mov al, [basic_octave]
-    mov bl, [new_octave]          
+    mov al, basic_octave
+    mov bl, new_octave         
     cmp al, bl                   
     je .done                     
 

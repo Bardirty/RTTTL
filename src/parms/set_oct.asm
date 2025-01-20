@@ -4,8 +4,8 @@ set_octave segment
 assume cs:set_octave
 
 set_basic_octave proc far
-    mov al, [basic_octave]       
-    mov bl, [new_octave]         
+    mov al, basic_octave       
+    mov bl, new_octave         
     cmp al, bl               
     je .done                 
 
@@ -14,15 +14,15 @@ set_basic_octave proc far
 	call remainder
 	neg cl
     call decrease_frequencies
-    mov bl, [new_octave]     
-    mov [basic_octave], bl
+    mov bl, new_octave     
+    mov basic_octave, bl
     jmp .done
 
 .increase:
 	call remainder
     call increase_frequencies
-    mov bl, [new_octave]     
-    mov [basic_octave], bl
+    mov bl, new_octave     
+    mov basic_octave, bl
 
 .done:
     ret
@@ -30,7 +30,7 @@ set_basic_octave endp
 
 increase_frequencies:
     mov bl, 12               
-    lea di, [note_freq]      
+    lea di, note_freq      
 .inc_loop:
     mov ax, [di]             
     shl ax, cl               
@@ -48,7 +48,7 @@ increase_frequencies:
 
 decrease_frequencies:
     mov bl, 12               
-    lea di, [note_freq]     
+    lea di, note_freq     
 .dec_loop:
     mov ax, [di]             
     shr ax, cl               

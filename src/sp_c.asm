@@ -1,7 +1,7 @@
 public play_sound, delay, stop_sound, calc_pause
 
 extrn new_duration:WORD, current_duration:WORD, bpm:WORD
-extrn msg_error_div_by_zero:byte, msg_error_bpm_too_low:byte
+extrn msg_error_div_by_zero:byte
 
 Progr           segment
 play_sound:
@@ -21,38 +21,29 @@ calc segment
 				
 delay proc far
                 xor dx, dx
-                mov cx, [current_duration]
+                mov cx, current_duration
                 mov ah, 86h
                 int 15h
                 ret
 delay endp
+
 calc_pause proc far
-                xor dx, dx          
-                mov ax, 4000       
-                mov bx, bpm
+    xor dx, dx              
+    mov ax, 4000            
+    mov bx, bpm             
 
-                cmp bx, 50          
-                jc .error_bpm_too_low
+    cmp bx, 0               
+    jz .error_div_by_zero
+    div bx                  
 
-                cmp bx, 0          
-                jz .error_div_by_zero
-                div bx              
+    mov bx, new_duration  
+    cmp bx, 0               
+    jz .error_div_by_zero
+    xor dx, dx              
+    div bx                  
 
-                mov bx, [new_duration]
-                cmp bx, 0          
-                jz .error_div_by_zero
-                div bx              
-                mov [current_duration], ax
-                ret
-
-.error_bpm_too_low:
-                lea dx, msg_error_bpm_too_low
-                mov ah, 09h
-                int 21h
-                mov ah, 4Ch        
-                mov al, 1          
-                int 21h
-
+    mov current_duration, ax
+    ret
 .error_div_by_zero:
                 lea dx, msg_error_div_by_zero
                 mov ah, 09h

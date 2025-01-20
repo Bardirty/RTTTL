@@ -124,7 +124,6 @@ end_read:
     ret
 readnumber endp
 
-
 check_dot proc near
     mov ax, new_duration
 check_dot_loop:

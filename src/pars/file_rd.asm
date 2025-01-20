@@ -1,6 +1,6 @@
 public file_read
 
-extrn file_name:byte, rtttl_name:byte, line_buf:byte, note_buffer:byte, bytesRead:word, file_msg:byte
+extrn file_name:byte, rtttl_name:byte, rtttl_buf:byte, file_buffer:byte, bytesRead:word, file_msg:byte
 
 file segment
     assume cs:file
@@ -13,14 +13,14 @@ file_read proc far
     jc file_error            
     mov bx, ax       
 	
-    lea dx, note_buffer      
+    lea dx, file_buffer      
     mov cx, 4096              
     mov ah, 3Fh              
     int 21h
     jc file_error            
     mov bytesRead, ax       
 
-    lea si, note_buffer
+    lea si, file_buffer
     add si, bytesRead              
     mov byte ptr [si], '$'  
 
@@ -28,8 +28,8 @@ file_read proc far
     int 21h
     jc file_error  
 	
-    lea si, note_buffer
-	lea bx, note_buffer     
+    lea si, file_buffer
+	lea bx, file_buffer     
     add bx, bytesRead 
 	
     call skip_name
@@ -65,13 +65,13 @@ skip_name_done:
 skip_name endp
 
 parse_all proc near
-    lea di, line_buf
+    lea di, rtttl_buf
 parse_all_loop:
     cmp si, bx
     jae parse_all_done
     mov al, [si]
     inc si
-    cmp di, offset line_buf + 4096
+    cmp di, offset rtttl_buf + 4096
     jae parse_all_done
     mov [di], al
     inc di

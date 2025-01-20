@@ -1,112 +1,81 @@
-public parse_rtttl
+public parse_params
 
 extrn basic_duration:word, new_octave:byte, bpm:word
-extrn msg_parseErr:byte, line_buf:byte
+extrn msg_overflow:byte, rtttl_buf:byte
 parsing segment
     assume cs:parsing
 
-parse_rtttl proc far
-    lea si, line_buf
-	
-    call parsesettingd
-    call parsesettingo
-    call parsesettingb
-    ret
-parse_rtttl endp
+parse_params proc far
+    lea si, rtttl_buf
+parse_loop:
+    mov al, [si]           
+    cmp al, 0               
+    je end_parse_params_loop
+	cmp al, ':'               
+    je end_parse_params_loop
+    cmp al, 'd'          
+    je parse_setting_d
+    cmp al, 'o'          
+    je parse_setting_o
+    cmp al, 'b'          
+    je parse_setting_b
+    inc si
+    jmp parse_loop
 
+end_parse_params_loop:
+	inc si ; => Skip ':' sign
+    ret
+parse_params endp
 ; -------------------------------
-; d=<value>
-parsesettingd proc near
-	xor ax, ax
-	mov al, [si]
-    mov cl, 'd'
-	call skiptochar
-    cmp al, cl
-    jne error_end          
+parse_setting_d:        
     add si, 2              
-    call readnumber        
+    call read_number        
     mov basic_duration, ax 
-    ret
-parsesettingd endp
+    jmp parse_loop
 
 ; -------------------------------
-; o=<value>
-parsesettingo proc near
-    xor ax, ax
-	mov al, [si]
-	mov cl, 'o'
-	call skiptochar
-    cmp al, cl
-    jne error_end          
+parse_setting_o:     
     add si, 2             
-    call readnumber          
+    call read_number          
     mov new_octave, al 
-    ret
-parsesettingo endp
+    jmp parse_loop
 
 ; -------------------------------
-; b=<value>
-parsesettingb proc near
-    xor ax, ax
-	mov al, [si]
-	mov cl, 'b'
-	call skiptochar
-    cmp al, cl
-    jne error_end   
-    add si, 2       
-    call readnumber 
-    mov bpm, ax     
-    ret
-parsesettingb endp
+parse_setting_b:
+    add si, 2            
+    call read_number
+    mov bpm, ax          
+    jmp parse_loop
 
 ; -------------------------------
-skiptochar proc near
-next_char_2:
-    mov al, [si]   
-    cmp al, cl     
-    je found_char
-	inc si
-    cmp al, '$'    
-    je error_end   
-    jmp next_char_2
-found_char:
-    ret
-skiptochar endp
-
-; -------------------------------
-readnumber proc near
+read_number proc near
     xor ax, ax     
 	xor cx, cx     
     mov bx, 10     
 readloop:          
-    mov cl, [si]   
-    inc si         
+    mov cl, [si]            
 	sub cl, '0'    
     cmp cl, 0      
     jc endread     
     cmp cl, 10     
     jnc endread    
 	mul bx         
-    add ax, cx     
-    jc overflow    
-    jmp readloop   
-overflow:          
-    xor ax, ax     
+    add ax, cx 
+    jc overflow
+	inc si
+    jmp readloop    
 endread:           
     ret            
-readnumber endp
+read_number endp
 
-
-
-error_end:
-	lea dx, msg_parseErr
+overflow:
+	lea dx, msg_overflow
 	mov ah, 09h
 	int 21h
 
     mov ah, 4ch
 	int 21h
     ret
-
 
 parsing ends
 end
