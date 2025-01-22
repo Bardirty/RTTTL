@@ -15,17 +15,9 @@ start:          mov     ax, dane
                 assume  ss:stosik
                 mov     sp, offset szczyt
                 
-				
-				lea dx, main_msg
+				call read_arg
 				mov ah, 09h
-				int 21h
-				
-				mov ah, 0Ah
-				mov dx, offset buffer_file_rd
-				int 21h
-				
-				mov ah,09h
-				lea dx,new_line
+				lea dx, new_line
 				int 21h
 				
 				call file_read
@@ -50,37 +42,65 @@ play proc far
                 ret
 play endp
 
-check_key proc near
-    mov ah, 01h
-    int 16h
-    jz no_key_pressed
+read_arg proc near
+				xor cx, cx
+				mov cl, es:[80h]          
+				cmp cl, 0                 
+				je no_arguments           
+				dec cl                     
+				mov si, 0082h              
 
-    mov ah, 00h 
-    int 16h     
-    cmp al, 0Dh 
-    je interrupt_music
-    cmp al, 20h
-    je interrupt_music
-	cmp al, '+'
-	je increase_bpm
-	cmp al, '-'
-	je decrease_bpm
-    ret
+				mov di, offset file_name 
+				add di, 6                
+
+				xor bx, bx                
+copy_loop:
+				mov al, es:[si + bx]
+				mov ds:[di + bx], al
+				inc bx
+				loop copy_loop
+				mov byte ptr [di + bx], 0
+				ret
+no_arguments:
+				lea dx, main_msg
+				mov ah, 09h
+				int 21h
+				mov ax, 4C01h   
+				int 21h
+read_arg endp
+
+
+
+check_key proc near
+				mov ah, 01h
+				int 16h
+				jz no_key_pressed
+
+				mov ah, 00h 
+				int 16h     
+				cmp al, 0Dh 
+				je interrupt_music
+				cmp al, 20h
+				je interrupt_music
+				cmp al, '+'
+				je increase_bpm
+				cmp al, '-'
+				je decrease_bpm
+				ret
 interrupt_music:
-    mov ax, 4c00h
-	int 21h
+				mov ax, 4c00h
+				int 21h
 increase_bpm:
-	cmp bpm, 300
-	jae no_key_pressed
-	add bpm, 5
-	ret
+				cmp bpm, 300
+				jae no_key_pressed
+				add bpm, 5
+				ret
 decrease_bpm:
-	cmp bpm, 20
-	jbe no_key_pressed
-	sub bpm, 5
-	ret
+				cmp bpm, 20
+				jbe no_key_pressed
+				sub bpm, 5
 no_key_pressed:
-    ret
+				ret
 check_key endp
 
 Progr           ends
@@ -102,19 +122,17 @@ dane            segment
 				bytesRead dw 0
                 
 				
-				main_msg db 10,13,"Give the song's path(ex: music\{file_name}.txt): $"
+				main_msg db 10,13,"Correct using: main.exe {file_name}.txt: $"
                 msg_note_error db 10, 13, "ERROR: Note is not found!$"
                 msg_overflow db 10,13, "ERROR: Overflow!$"
-				file_msg db "Error reading file!$"
+				file_msg db "File doesn't exist$"
 				msg_error_div_by_zero db 10, 13, "Error: Division by zero!$", 0
 				msg_invalid_note db 10, 13, "ERROR: Invalid note found in RTTTL string!$"
               
 				rtttl_name db 64 dup(?)
 				rtttl_buf db 4096 dup(?)
 				
-				buffer_file_rd db 32
-				file_len db ?
-                file_name db 31 dup(0)
+                file_name db 'music/', 122 dup(0)
 				
 				color_cycle db 0				
 				new_line db 10,13,'$'
